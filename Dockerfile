@@ -5,7 +5,7 @@ FROM bash:latest
 WORKDIR /app
 
 # Copy the Bash script into the container
-COPY your_script.sh /app/your_script.sh
+COPY wisecow.sh /app/wisecow.sh
 
 # Install cowsay and fortune (and netcat, if necessary)
 RUN apt-get update \
@@ -13,10 +13,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Set execute permissions on the script
-RUN chmod +x /app/your_script.sh
+RUN chmod +x /app/wisecow.sh
 
 # Expose the port that your script is listening on
 EXPOSE 4499
 
 # Run the script when the container starts
-CMD ["/app/your_script.sh"]
+CMD ["/app/wisecow.sh"]
