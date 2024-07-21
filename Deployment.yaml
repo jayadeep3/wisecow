@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: wisecow-app
+  name: wisecow-app-pod
+  namespace: wisecow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wisecow-app
+  template:
+    metadata:
+      labels:
+        app: wisecow-app
+    spec:
+      hostNetwork: true
+      containers:
+      - name: wisecow-app-ctr
+        image:
+        imagePullPolicy: ""
+        ports:
+        - containerPort:
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wisecow-app-svc
+  namespace: wisecow
+spec:
+  ports:
+  - port:
+    targetPort:
+  selector:
+    app: wisecow-app
+  type: NodePort
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    app: wisecow-app
+    environment: test
+  namespace: wisecow
+  name: wisecow-app-ing
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: instance
+    alb.ingress.kubernetes.io/group.name: wisecow-app
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443},{"HTTP":80}]'
+    alb.ingress.kubernetes.io/certificate-arn:
+spec:
+  ingressClassName: alb
+  rules:
+  - host: wisecow.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: wisecow-app-svc
+            port:
+              number:
